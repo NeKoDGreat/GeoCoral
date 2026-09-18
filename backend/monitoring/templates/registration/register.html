@@ -1,0 +1,45 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Register — GeoCoral{% endblock %}
+
+{% block content %}
+<div class="login-shell">
+  <h1>Create an account</h1>
+  <p class="subtitle" style="margin-top:-14px; margin-bottom:24px;">For divers submitting coral photos. CENRO staff and sanctuary manager accounts are set up by an administrator.</p>
+
+  {% if form.errors %}
+    <div class="error-banner">
+      {% for field in form %}{% for error in field.errors %}{{ error }}<br>{% endfor %}{% endfor %}
+      {% for error in form.non_field_errors %}{{ error }}<br>{% endfor %}
+    </div>
+  {% endif %}
+
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="id_username">Username</label>
+      <input type="text" name="username" id="id_username" autofocus required value="{{ form.username.value|default:'' }}">
+    </div>
+    <div class="field">
+      <label for="id_email">Email (optional)</label>
+      <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}">
+    </div>
+    <div class="field">
+      <label for="id_phone_number">Phone number (optional)</label>
+      <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value|default:'' }}">
+    </div>
+    <div class="field">
+      <label for="id_password1">Password</label>
+      <input type="password" name="password1" id="id_password1" required>
+    </div>
+    <div class="field">
+      <label for="id_password2">Confirm password</label>
+      <input type="password" name="password2" id="id_password2" required>
+    </div>
+    <button type="submit" class="btn">Create account</button>
+  </form>
+
+  <p style="margin-top:20px; font-size:13px; color:var(--color-ink-dim);">
+    Already have an account? <a href="{% url 'login' %}">Log in</a>
+  </p>
+</div>
+{% endblock %}

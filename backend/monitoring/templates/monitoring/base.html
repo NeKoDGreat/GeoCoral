@@ -1,0 +1,35 @@
+{% load static %}<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}GeoCoral{% endblock %}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@500;600&family=Public+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <link rel="stylesheet" href="{% static 'monitoring/css/style.css' %}">
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+  <div class="topbar">
+    <div class="wordmark">GeoCoral<small>Samal Island reef monitoring</small></div>
+    <nav class="nav">
+      <a href="{% url 'monitoring:map' %}" class="{% if request.resolver_match.url_name == 'map' %}current{% endif %}">Map</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'monitoring:upload' %}" class="{% if request.resolver_match.url_name == 'upload' %}current{% endif %}">Submit photo</a>
+        <span class="user">{{ user.username }}</span>
+       <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
+  {% csrf_token %}
+  <button type="submit" style="background:none; border:none; padding:0; color:var(--color-ink-dim); font-family:var(--font-body); font-size:14px; cursor:pointer;">Log out</button>
+</form>
+      {% else %}
+        <a href="{% url 'login' %}?next={{ request.path }}">Log in</a>
+      {% endif %}
+    </nav>
+  </div>
+
+  {% block content %}{% endblock %}
+
+  {% block extra_scripts %}{% endblock %}
+</body>
+</html>

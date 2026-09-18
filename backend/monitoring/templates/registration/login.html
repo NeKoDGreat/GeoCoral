@@ -1,0 +1,27 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Log in — GeoCoral{% endblock %}
+
+{% block content %}
+<div class="login-shell">
+  <h1>Log in</h1>
+  {% if form.errors %}
+    <div class="error-banner">Incorrect username or password.</div>
+  {% endif %}
+  <form method="post">
+    {% csrf_token %}
+    <div class="field">
+      <label for="id_username">Username</label>
+      <input type="text" name="username" id="id_username" autofocus required>
+    </div>
+    <div class="field">
+      <label for="id_password">Password</label>
+      <input type="password" name="password" id="id_password" required>
+    </div>
+    <input type="hidden" name="next" value="{{ next }}">
+    <button type="submit" class="btn">Log in</button>
+  </form>
+  <p style="margin-top:20px; font-size:13px; color:var(--color-ink-dim);">
+    Don't have an account? <a href="{% url 'monitoring:register' %}">Register</a>
+  </p>
+</div>
+{% endblock %}

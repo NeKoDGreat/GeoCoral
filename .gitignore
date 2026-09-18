@@ -1,0 +1,31 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+*.egg-info/
+
+# Django
+backend/db.sqlite3
+backend/media/
+backend/staticfiles/
+backend/*.log
+
+# Environment secrets — never commit these
+.env
+*.env
+
+# ML artifacts — too large for GitHub, regenerate locally or download separately
+saved_models/
+logs/
+processed_data/
+
+# Raw data — large images, not source code
+raw_data/*/*/*.jpg
+raw_data/*/*/*.jpeg
+raw_data/*/*/*.png
+raw_data/local_field_images/metadata.csv
+
+# OS/editor junk
+.DS_Store
+Thumbs.db
+.vscode/

@@ -1,0 +1,51 @@
+{% extends "monitoring/base.html" %}
+{% load static %}
+{% block title %}Map — GeoCoral{% endblock %}
+
+{% block content %}
+<div class="app-shell">
+  <div id="map"></div>
+  <div class="rail">
+    <div>
+      <h2>Filter</h2>
+      <div class="field">
+        <label for="sanctuary-filter">Sanctuary</label>
+        <select id="sanctuary-filter">
+          <option value="">All sanctuaries</option>
+        </select>
+      </div>
+      <div class="field" style="margin-top: 12px;">
+        <label for="label-filter">Classification</label>
+        <select id="label-filter">
+          <option value="">Healthy + bleached</option>
+          <option value="healthy">Healthy only</option>
+          <option value="bleached">Bleached only</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="legend">
+      <div class="legend-row"><span class="dot healthy"></span> Healthy coral</div>
+      <div class="legend-row"><span class="dot bleached"></span> Bleached coral</div>
+    </div>
+
+    <div id="stats">
+      <div class="stat-row"><span>Records shown</span><strong id="stat-total">—</strong></div>
+      <div class="stat-row"><span>Bleached</span><strong id="stat-bleached">—</strong></div>
+    </div>
+
+    <div class="rail-footer">
+      {% if user.is_authenticated %}
+        <a href="{% url 'monitoring:upload' %}" class="btn" style="display:block;">Submit a photo</a>
+      {% else %}
+        <a href="{% url 'login' %}?next={% url 'monitoring:upload' %}" class="btn" style="display:block;">Log in to submit</a>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="{% static 'monitoring/js/map.js' %}"></script>
+{% endblock %}

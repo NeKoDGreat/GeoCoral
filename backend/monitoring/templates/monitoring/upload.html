@@ -1,0 +1,67 @@
+{% extends "monitoring/base.html" %}
+{% load static %}
+{% block title %}Submit a photo — GeoCoral{% endblock %}
+
+{% block content %}
+<div class="log-sheet">
+  <h1>Submit a coral photo</h1>
+  <p class="subtitle">Classified automatically on submission. GPS is captured from your device when available.</p>
+
+  {% csrf_token %}
+  <form id="upload-form">
+    <div class="log-row">
+      <label for="image">Photo</label>
+      <div>
+        <input type="file" id="image" name="image" accept="image/*" capture="environment" required>
+        <div class="hint">Take the photo close enough that the coral fills most of the frame.</div>
+      </div>
+    </div>
+
+    <div class="log-row">
+      <label>Location</label>
+      <div>
+        <div id="gps-readout" class="gps-readout">Requesting device location&hellip;</div>
+        <div class="hint" id="gps-hint">If location can't be captured automatically, enter it manually below.</div>
+        <div id="manual-latlon" style="display:none; margin-top:10px; display:flex; gap:10px;">
+          <input type="number" id="manual-lat" placeholder="Latitude" step="any" style="flex:1;">
+          <input type="number" id="manual-lon" placeholder="Longitude" step="any" style="flex:1;">
+        </div>
+      </div>
+    </div>
+
+    <div class="log-row">
+      <label for="sanctuary">Sanctuary</label>
+      <select id="sanctuary" name="sanctuary" required>
+        <option value="">Select a sanctuary&hellip;</option>
+      </select>
+    </div>
+
+    <div class="log-row">
+      <label for="area_code">Area code</label>
+      <input type="text" id="area_code" name="area_code" placeholder="e.g. ADE-01">
+    </div>
+
+    <div class="log-row">
+      <label for="depth_m">Depth (m)</label>
+      <input type="number" id="depth_m" name="depth_m" step="0.1" min="0" placeholder="e.g. 5.2">
+    </div>
+
+    <div class="log-row">
+      <label for="captured_at">Date &amp; time</label>
+      <input type="datetime-local" id="captured_at" name="captured_at" required>
+    </div>
+
+    <div class="form-actions">
+      <button type="submit" class="btn" id="submit-btn">Classify &amp; submit</button>
+      <span id="submit-status" class="hint"></span>
+    </div>
+  </form>
+
+  <div id="result" style="display:none;"></div>
+  <div id="error" class="error-banner" style="display:none;"></div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script src="{% static 'monitoring/js/upload.js' %}"></script>
+{% endblock %}
