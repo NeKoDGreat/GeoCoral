@@ -15,8 +15,11 @@
     <div class="wordmark">GeoCoral<small>Samal Island reef monitoring</small></div>
     <nav class="nav">
       <a href="{% url 'monitoring:map' %}" class="{% if request.resolver_match.url_name == 'map' %}current{% endif %}">Map</a>
-      {% if user.is_authenticated %}
+            {% if user.is_authenticated %}
         <a href="{% url 'monitoring:upload' %}" class="{% if request.resolver_match.url_name == 'upload' %}current{% endif %}">Submit photo</a>
+        {% if user_is_staff_role %}
+          <a href="{% url 'monitoring:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}current{% endif %}">Dashboard</a>
+        {% endif %}
         <span class="user">{{ user.username }}</span>
        <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
   {% csrf_token %}

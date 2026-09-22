@@ -1,0 +1,102 @@
+{% extends "monitoring/base.html" %}
+{% load static %}
+{% block title %}Dashboard — GeoCoral{% endblock %}
+
+{% block content %}
+<div style="max-width: 1100px; margin: 0 auto; padding: 40px 24px;">
+  <h1 style="font-family: var(--font-display); font-size: 28px; margin: 0 0 6px 0;">Dashboard</h1>
+  <p style="color: var(--color-ink-dim); font-size: 14px; margin: 0 0 32px 0;">System-wide summary and record verification.</p>
+
+  <!-- Summary stats -->
+  <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 40px;">
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Total records</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ total_records }}</div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Bleached</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px; color:var(--color-bone);">{{ bleached_count }} <span style="font-size:14px; color:var(--color-ink-faint);">({{ bleached_pct }}%)</span></div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Healthy</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px; color:var(--color-coral);">{{ healthy_count }}</div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Model / expert agreement</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">
+        {% if agreement_pct is not None %}{{ agreement_pct }}%{% else %}—{% endif %}
+        <span style="font-size:13px; color:var(--color-ink-faint);">(n={{ verified_count }})</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- Per-sanctuary breakdown -->
+  <h2 style="font-family: var(--font-display); font-size: 18px; margin: 0 0 12px 0;">By sanctuary</h2>
+  <table style="width:100%; border-collapse: collapse; margin-bottom: 40px; font-size: 14px;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--color-line); text-align:left; color: var(--color-ink-dim);">
+        <th style="padding: 8px 4px;">Sanctuary</th>
+        <th style="padding: 8px 4px;">Area code</th>
+        <th style="padding: 8px 4px; font-family: var(--font-mono);">Total</th>
+        <th style="padding: 8px 4px; font-family: var(--font-mono);">Bleached</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for s in sanctuaries %}
+      <tr style="border-bottom: 1px solid var(--color-line);">
+        <td style="padding: 8px 4px;">{{ s.name }}</td>
+        <td style="padding: 8px 4px; font-family: var(--font-mono); color: var(--color-ink-dim);">{{ s.area_code }}</td>
+        <td style="padding: 8px 4px; font-family: var(--font-mono);">{{ s.total }}</td>
+        <td style="padding: 8px 4px; font-family: var(--font-mono); color: var(--color-bone);">{{ s.bleached }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <!-- Records table with inline verification -->
+  <h2 style="font-family: var(--font-display); font-size: 18px; margin: 0 0 12px 0;">Recent submissions</h2>
+  <table style="width:100%; border-collapse: collapse; font-size: 14px;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--color-line); text-align:left; color: var(--color-ink-dim);">
+        <th style="padding: 8px 4px;">Date</th>
+        <th style="padding: 8px 4px;">Sanctuary</th>
+        <th style="padding: 8px 4px;">Prediction</th>
+        <th style="padding: 8px 4px;">Confidence</th>
+        <th style="padding: 8px 4px;">Verified as</th>
+        <th style="padding: 8px 4px;">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in records %}
+      <tr style="border-bottom: 1px solid var(--color-line);">
+        <td style="padding: 8px 4px; font-family: var(--font-mono); color: var(--color-ink-dim);">{{ record.captured_at|date:"Y-m-d" }}</td>
+        <td style="padding: 8px 4px;">{{ record.sanctuary.name }}</td>
+        <td style="padding: 8px 4px; {% if record.predicted_label == 'bleached' %}color: var(--color-bone);{% else %}color: var(--color-coral);{% endif %}">{{ record.get_predicted_label_display }}</td>
+        <td style="padding: 8px 4px; font-family: var(--font-mono);">{{ record.confidence|floatformat:1 }}</td>
+        <td style="padding: 8px 4px;">
+          {% if record.verified_label %}
+            <span style="{% if record.verified_label == 'bleached' %}color: var(--color-bone);{% else %}color: var(--color-coral);{% endif %}">{{ record.get_verified_label_display }}</span>
+          {% else %}
+            <span style="color: var(--color-ink-faint);">Not yet reviewed</span>
+          {% endif %}
+        </td>
+        <td style="padding: 8px 4px;">
+          <form method="post" action="{% url 'monitoring:verify_record' record.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="verified_label" value="healthy">
+            <button type="submit" class="btn-secondary" style="padding:4px 8px; font-size:12px; border-radius:3px; cursor:pointer;">Confirm healthy</button>
+          </form>
+          <form method="post" action="{% url 'monitoring:verify_record' record.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="verified_label" value="bleached">
+            <button type="submit" class="btn-secondary" style="padding:4px 8px; font-size:12px; border-radius:3px; cursor:pointer;">Confirm bleached</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="padding: 16px 4px; color: var(--color-ink-faint);">No submissions yet.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}
