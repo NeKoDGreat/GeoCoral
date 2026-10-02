@@ -1,6 +1,7 @@
 from django.urls import path
 
 from .frontend_views import DashboardView, MapView, RegisterView, UploadView, VerifyRecordView
+from .frontend_views import DashboardView, MapView, RegisterView, SpeciesTagView, UploadView, VerifyRecordView
 
 app_name = "monitoring"
 
@@ -10,4 +11,5 @@ urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
     path("dashboard/", DashboardView.as_view(), name="dashboard"),
     path("dashboard/verify/<int:pk>/", VerifyRecordView.as_view(), name="verify_record"),
+    path("dashboard/tag-species/<int:pk>/", SpeciesTagView.as_view(), name="tag_species"),
 ]

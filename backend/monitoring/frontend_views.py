@@ -122,3 +122,23 @@ class VerifyRecordView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             record.verified_at = timezone.now()
             record.save(update_fields=["verified_label", "verified_by", "verified_at"])
         return redirect("monitoring:dashboard")
+
+
+class SpeciesTagView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Handles the species dropdown + submit on the dashboard. Manual
+    tagging only — not AI-identified, see CoralRecord.SPECIES_CHOICES."""
+    login_url = "login"
+
+    def test_func(self):
+        return is_staff_role(self.request.user)
+
+    def post(self, request, *args, **kwargs):
+        record = get_object_or_404(CoralRecord, pk=kwargs["pk"])
+        species = request.POST.get("species")
+        valid_choices = dict(CoralRecord.SPECIES_CHOICES)
+        if species in valid_choices:
+            record.species = species
+            record.species_tagged_by = request.user
+            record.species_tagged_at = timezone.now()
+            record.save(update_fields=["species", "species_tagged_by", "species_tagged_at"])
+        return redirect("monitoring:dashboard")

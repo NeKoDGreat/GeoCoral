@@ -103,6 +103,29 @@ class CoralRecord(models.Model):
     )
     verified_at = models.DateTimeField(null=True, blank=True)
 
+    # Manually tagged species, separate from the verified_by/at pair
+    # above since a different expert might tag species than the one
+    # who verified health status, at a different time. Not AI-
+    # identified — the ResNet50 model only classifies healthy/bleached.
+    SPECIES_CHOICES = [
+        ("acropora", "Acropora (staghorn/table coral)"),
+        ("porites", "Porites (boulder/finger coral)"),
+        ("favites", "Favites (brain coral)"),
+        ("platygyra", "Platygyra (brain coral)"),
+        ("montipora", "Montipora (encrusting/plate coral)"),
+        ("pocillopora", "Pocillopora (cauliflower coral)"),
+        ("fungia", "Fungia (mushroom coral)"),
+        ("diploastrea", "Diploastrea (honeycomb coral)"),
+        ("other", "Other"),
+        ("unknown", "Unknown / not yet identified"),
+    ]
+    species = models.CharField(max_length=20, choices=SPECIES_CHOICES, blank=True, null=True)
+    species_tagged_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL,
+        null=True, blank=True, related_name="species_tagged_records",
+    )
+    species_tagged_at = models.DateTimeField(null=True, blank=True)
+
     # Location — the field this table exists to serve. PointField
     # (longitude, latitude) in WGS84 (SRID 4326), the standard GPS datum.
     location = gis_models.PointField(srid=4326)

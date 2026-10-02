@@ -288,3 +288,65 @@ select:focus, input:focus, textarea:focus { border-color: var(--color-focus); }
 .login-shell h1 { font-family: var(--font-display); font-size: 26px; margin-bottom: 24px; }
 .login-shell .field { margin-bottom: 16px; }
 .login-shell input { width: 100%; }
+
+/* --- Tables: horizontal scroll on narrow screens instead of
+   squeezing/overflowing the page --- */
+table { display: block; overflow-x: auto; white-space: nowrap; }
+
+/* ============================================================
+   Responsive breakpoints — phone-sized screens (~768px and below)
+   ============================================================ */
+@media (max-width: 768px) {
+  .topbar {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 12px 16px;
+  }
+  .nav {
+    flex-wrap: wrap;
+    gap: 12px;
+    font-size: 13px;
+  }
+
+  /* Map page: stack the map above the filter rail instead of
+     squeezing them side by side. */
+  .app-shell {
+    flex-direction: column;
+    height: auto;
+  }
+  #map {
+    height: 50vh;
+    min-height: 320px;
+  }
+  .rail {
+    width: 100%;
+    border-left: none;
+    border-top: 1px solid var(--color-line);
+    max-height: none;
+  }
+
+  /* Upload/login/register forms: stack label above input instead of
+     a fixed-width label column, which eats too much space narrow. */
+  .log-row {
+    grid-template-columns: 1fr;
+    gap: 6px;
+  }
+  .log-row label { padding-top: 0; }
+  .log-sheet { margin: 24px auto; padding: 0 16px; }
+  .log-sheet h1 { font-size: 22px; }
+
+  .login-shell { margin: 48px auto; padding: 0 16px; }
+
+  /* Dashboard: 2 stat cards per row instead of 4 squeezed into one. */
+  div[style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+@media (max-width: 420px) {
+  /* Very narrow phones: stat cards go fully single-column. */
+  div[style*="grid-template-columns: repeat(4, 1fr)"] {
+    grid-template-columns: 1fr !important;
+  }
+  .wordmark { font-size: 19px; }
+}

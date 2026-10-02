@@ -80,7 +80,7 @@
             <span style="color: var(--color-ink-faint);">Not yet reviewed</span>
           {% endif %}
         </td>
-        <td style="padding: 8px 4px;">
+                <td style="padding: 8px 4px;">
           <form method="post" action="{% url 'monitoring:verify_record' record.id %}" style="display:inline;">
             {% csrf_token %}
             <input type="hidden" name="verified_label" value="healthy">
@@ -90,6 +90,16 @@
             {% csrf_token %}
             <input type="hidden" name="verified_label" value="bleached">
             <button type="submit" class="btn-secondary" style="padding:4px 8px; font-size:12px; border-radius:3px; cursor:pointer;">Confirm bleached</button>
+          </form>
+          <form method="post" action="{% url 'monitoring:tag_species' record.id %}" style="display:inline-flex; gap:4px; margin-top:4px;">
+            {% csrf_token %}
+            <select name="species" style="padding:3px 4px; font-size:12px;">
+              <option value="">{% if record.species %}{{ record.get_species_display }}{% else %}Tag species...{% endif %}</option>
+              {% for value, label in record.SPECIES_CHOICES %}
+                <option value="{{ value }}" {% if record.species == value %}selected{% endif %}>{{ label }}</option>
+              {% endfor %}
+            </select>
+            <button type="submit" class="btn-secondary" style="padding:3px 8px; font-size:12px; border-radius:3px; cursor:pointer;">Save</button>
           </form>
         </td>
       </tr>
