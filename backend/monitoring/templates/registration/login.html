@@ -3,7 +3,7 @@
 
 {% block content %}
 <div class="login-shell">
-  <h1>Log in</h1>
+  <h1>Log In</h1>
   {% if form.errors %}
     <div class="error-banner">Incorrect username or password.</div>
   {% endif %}
@@ -18,7 +18,7 @@
       <input type="password" name="password" id="id_password" required>
     </div>
     <input type="hidden" name="next" value="{{ next }}">
-    <button type="submit" class="btn">Log in</button>
+    <button type="submit" class="btn">Log In</button>
   </form>
   <p style="margin-top:20px; font-size:13px; color:var(--color-ink-dim);">
     Don't have an account? <a href="{% url 'monitoring:register' %}">Register</a>

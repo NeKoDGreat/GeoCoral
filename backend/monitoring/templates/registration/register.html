@@ -4,7 +4,7 @@
 {% block content %}
 <div class="login-shell">
   <h1>Create an account</h1>
-  <p class="subtitle" style="margin-top:-14px; margin-bottom:24px;">For divers submitting coral photos. CENRO staff and sanctuary manager accounts are set up by an administrator.</p>
+
 
   {% if form.errors %}
     <div class="error-banner">
@@ -39,7 +39,7 @@
   </form>
 
   <p style="margin-top:20px; font-size:13px; color:var(--color-ink-dim);">
-    Already have an account? <a href="{% url 'login' %}">Log in</a>
+    Already have an account? <a href="{% url 'login' %}" style="color: #6fe3c8;">Log in</a>
   </p>
 </div>
 {% endblock %}

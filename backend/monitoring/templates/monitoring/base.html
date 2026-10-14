@@ -12,7 +12,7 @@
 </head>
 <body>
   <div class="topbar">
-    <div class="wordmark">GeoCoral<small>Samal Island reef monitoring</small></div>
+    <div class="wordmark">GeoCoral<small>Samal Island Reef Monitoring</small></div>
     <nav class="nav">
       <a href="{% url 'monitoring:map' %}" class="{% if request.resolver_match.url_name == 'map' %}current{% endif %}">Map</a>
             {% if user.is_authenticated %}
@@ -28,10 +28,46 @@
       {% else %}
         <a href="{% url 'login' %}?next={{ request.path }}">Log in</a>
       {% endif %}
+      <button class="theme-toggle" type="button" aria-label="Toggle dark and light mode" aria-pressed="false">
+        <span class="toggle-track">
+          <span class="toggle-thumb"></span>
+        </span>
+        <span class="toggle-label">Dark</span>
+      </button>
     </nav>
   </div>
 
   {% block content %}{% endblock %}
+
+  <script>
+    (function () {
+      const body = document.body;
+      const toggle = document.querySelector('.theme-toggle');
+      const label = document.querySelector('.toggle-label');
+      const savedTheme = localStorage.getItem('geocoral-theme');
+
+      function applyTheme(theme) {
+        const isLight = theme === 'light';
+        body.classList.toggle('light-mode', isLight);
+        if (toggle) toggle.setAttribute('aria-pressed', String(isLight));
+        if (label) label.textContent = isLight ? 'Light' : 'Dark';
+      }
+
+      if (savedTheme === 'light') {
+        applyTheme('light');
+      } else {
+        applyTheme('dark');
+      }
+
+      if (toggle) {
+        toggle.addEventListener('click', function () {
+          const nextTheme = body.classList.contains('light-mode') ? 'dark' : 'light';
+          applyTheme(nextTheme);
+          localStorage.setItem('geocoral-theme', nextTheme);
+        });
+      }
+    })();
+  </script>
 
   {% block extra_scripts %}{% endblock %}
 </body>

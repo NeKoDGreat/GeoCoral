@@ -168,3 +168,4 @@ GEOCORAL_MODEL_PATH = os.environ.get(
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "monitoring:map"
+GDAL_LIBRARY_PATH = r'C:\OSGeo4W\bin\gdal313.dll'
