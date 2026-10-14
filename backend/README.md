@@ -67,6 +67,30 @@ python manage.py migrate
 python manage.py createsuperuser
 ```
 
+For local project testing, create the four shared profile accounts after
+migrations:
+
+```powershell
+python manage.py seed_users
+```
+
+This command is blocked when `DEBUG=False`. It creates or refreshes the
+following local-only accounts; rerunning it resets their passwords to
+these documented values:
+
+| Role | Username | Password |
+|---|---|---|
+| CENRO Staff | `cenro_staff` | `geocoralcenrostaff` |
+| Sanctuary Manager | `sanctuary_manager` | `geocoralsanctuarymanager` |
+| Authorized Diver | `diver` | `geocoraldiver` |
+| Administrator | `admin` | `geocoraladmin` |
+
+The Administrator profile can view, add, and edit GeoCoral records in
+Django admin, but is not a superuser and cannot delete records. These
+shared credentials are intentionally for local development only; do not
+enable or use them in production. The accounts use non-deliverable
+`example.invalid` email addresses.
+
 ## 4. Seed placeholder sanctuaries
 
 ```bash

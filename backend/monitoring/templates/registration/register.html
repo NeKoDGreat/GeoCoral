@@ -20,12 +20,12 @@
       <input type="text" name="username" id="id_username" autofocus required value="{{ form.username.value|default:'' }}">
     </div>
     <div class="field">
-      <label for="id_email">Email (optional)</label>
-      <input type="email" name="email" id="id_email" value="{{ form.email.value|default:'' }}">
+      <label for="id_email">Email</label>
+      <input type="email" name="email" id="id_email" required value="{{ form.email.value|default:'' }}">
     </div>
     <div class="field">
-      <label for="id_phone_number">Phone number (optional)</label>
-      <input type="text" name="phone_number" id="id_phone_number" value="{{ form.phone_number.value|default:'' }}">
+      <label for="id_phone_number">Phone number</label>
+      <input type="tel" name="phone_number" id="id_phone_number" required value="{{ form.phone_number.value|default:'' }}">
     </div>
     <div class="field">
       <label for="id_password1">Password</label>
@@ -38,8 +38,8 @@
     <button type="submit" class="btn">Create account</button>
   </form>
 
-  <p style="margin-top:20px; font-size:13px; color:var(--color-ink-dim);">
-    Already have an account? <a href="{% url 'login' %}" style="color: #6fe3c8;">Log in</a>
+  <p class="auth-switch">
+    Already have an account? <a href="{% url 'login' %}">Log in</a>
   </p>
 </div>
 {% endblock %}

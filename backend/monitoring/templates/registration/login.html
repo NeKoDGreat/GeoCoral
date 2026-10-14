@@ -17,10 +17,13 @@
       <label for="id_password">Password</label>
       <input type="password" name="password" id="id_password" required>
     </div>
+    <div class="forgot-password">
+      <a href="#">Forgot password?</a>
+    </div>
     <input type="hidden" name="next" value="{{ next }}">
     <button type="submit" class="btn">Log In</button>
   </form>
-  <p style="margin-top:20px; font-size:13px; color:var(--color-ink-dim);">
+  <p class="auth-switch">
     Don't have an account? <a href="{% url 'monitoring:register' %}">Register</a>
   </p>
 </div>

@@ -21,7 +21,7 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
-body.light-mode {
+html.light-mode {
   --color-deep: #eef7f3;
   --color-panel: #e2f0ee;
   --color-panel-raised: rgba(255, 255, 255, 0.56);
@@ -41,13 +41,17 @@ body.light-mode {
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   background: var(--color-deep);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
   transition: background 0.2s ease, color 0.2s ease;
+}
+
+body {
+  min-height: 100vh;
 }
 
 a { color: var(--color-coral); text-decoration: none; }
@@ -132,7 +136,7 @@ a:hover { text-decoration: underline; }
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-body.light-mode .toggle-thumb {
+html.light-mode .toggle-thumb {
   transform: translateX(16px);
   background: var(--color-focus);
 }
@@ -371,6 +375,16 @@ select:focus, input:focus, textarea:focus { border-color: var(--color-focus); }
   margin-bottom: 16px;
   text-align: left;
 }
+.login-shell .forgot-password {
+  width: 100%;
+  margin-top: -10px;
+  margin-bottom: 16px;
+  text-align: right;
+  font-size: 13px;
+}
+.login-shell .forgot-password a {
+  color: var(--color-focus);
+}
 .login-shell .field label {
   display: block;
   width: 100%;
@@ -391,6 +405,12 @@ select:focus, input:focus, textarea:focus { border-color: var(--color-focus); }
 .login-shell .btn:hover {
   background: #8ef0d7;
 }
-.login-shell a {
-  color: #6fe3c8;
+.login-shell .auth-switch {
+  margin: 20px 0 0;
+  font-size: 13px;
+  color: var(--color-ink-dim);
+  background: transparent;
+}
+.login-shell .auth-switch a {
+  color: var(--color-focus);
 }

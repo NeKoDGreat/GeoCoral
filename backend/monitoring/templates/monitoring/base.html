@@ -41,14 +41,14 @@
 
   <script>
     (function () {
-      const body = document.body;
+      const root = document.documentElement;
       const toggle = document.querySelector('.theme-toggle');
       const label = document.querySelector('.toggle-label');
       const savedTheme = localStorage.getItem('geocoral-theme');
 
       function applyTheme(theme) {
         const isLight = theme === 'light';
-        body.classList.toggle('light-mode', isLight);
+        root.classList.toggle('light-mode', isLight);
         if (toggle) toggle.setAttribute('aria-pressed', String(isLight));
         if (label) label.textContent = isLight ? 'Light' : 'Dark';
       }
@@ -61,7 +61,7 @@
 
       if (toggle) {
         toggle.addEventListener('click', function () {
-          const nextTheme = body.classList.contains('light-mode') ? 'dark' : 'light';
+          const nextTheme = root.classList.contains('light-mode') ? 'dark' : 'light';
           applyTheme(nextTheme);
           localStorage.setItem('geocoral-theme', nextTheme);
         });
