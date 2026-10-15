@@ -1,0 +1,38 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Sanctuary manager workspace — GeoCoral{% endblock %}
+
+{% block content %}
+<main style="max-width:1100px; margin:0 auto; padding:40px 24px;">
+  <h1 style="font-family:var(--font-display); font-size:28px; margin:0 0 6px;">Sanctuary manager workspace</h1>
+  <p style="color:var(--color-ink-dim); font-size:14px; margin:0 0 24px;">Review submissions and verify classifications for sanctuaries assigned to you.</p>
+
+  <section aria-label="Your assigned sanctuaries" style="border:1px solid var(--color-line); border-radius:4px; padding:16px; margin-bottom:28px;">
+    <h2 style="font-family:var(--font-display); font-size:18px; margin:0 0 12px;">Your sanctuaries</h2>
+    <ul style="margin:0; padding-left:20px; color:var(--color-ink-dim);">
+      {% for sanctuary in sanctuaries %}
+      <li>{{ sanctuary.name }} <span style="font-family:var(--font-mono);">({{ sanctuary.area_code }})</span> — {{ sanctuary.total }} records</li>
+      {% empty %}
+      <li>No sanctuaries are assigned to your account yet. Ask CENRO to assign your monitoring area.</li>
+      {% endfor %}
+    </ul>
+  </section>
+
+  <section aria-label="Assigned sanctuary summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:40px;">
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Assigned-area records</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ total_records }}</div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Bleached</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ bleached_count }} <span style="font-size:14px; color:var(--color-ink-faint);">({{ bleached_pct }}%)</span></div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Awaiting verification</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ pending_count }}</div>
+    </div>
+  </section>
+
+  <h2 style="font-family:var(--font-display); font-size:18px; margin:0 0 12px;">Recent assigned-area submissions</h2>
+  {% include "monitoring/roles/record_review_table.html" %}
+</main>
+{% endblock %}

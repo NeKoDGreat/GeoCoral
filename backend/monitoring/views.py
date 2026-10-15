@@ -14,7 +14,7 @@ from rest_framework.response import Response
 
 from . import ml_service
 from .models import CoralRecord, Sanctuary
-from .permissions import is_staff_role
+from .permissions import can_manage_record, is_staff_role
 from .serializers import (
     CoralRecordSerializer,
     CoralRecordUploadSerializer,
@@ -24,13 +24,13 @@ from .serializers import (
 
 class IsStaffRoleOrReadOnly(permissions.BasePermission):
     """Editing/deleting an existing record (as opposed to creating a
-    new one) is a CENRO staff / sanctuary manager / admin action — see
+    new one) is a CENRO staff / assigned sanctuary manager action — see
     monitoring/permissions.py."""
 
     def has_object_permission(self, request, view, obj):
         if request.method in permissions.SAFE_METHODS:
             return True
-        return is_staff_role(request.user)
+        return can_manage_record(request.user, obj)
 
 
 class SanctuaryViewSet(viewsets.ReadOnlyModelViewSet):

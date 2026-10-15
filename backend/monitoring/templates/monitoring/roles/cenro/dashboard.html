@@ -1,0 +1,60 @@
+{% extends "monitoring/base.html" %}
+{% block title %}CENRO workspace — GeoCoral{% endblock %}
+
+{% block content %}
+<main style="max-width:1100px; margin:0 auto; padding:40px 24px;">
+  <h1 style="font-family:var(--font-display); font-size:28px; margin:0 0 6px;">CENRO monitoring</h1>
+  <p style="color:var(--color-ink-dim); font-size:14px; margin:0 0 32px;">System-wide coral health and submission review.</p>
+
+  <section aria-label="System-wide summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:16px; margin-bottom:40px;">
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Total records</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ total_records }}</div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Bleached</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ bleached_count }} <span style="font-size:14px; color:var(--color-ink-faint);">({{ bleached_pct }}%)</span></div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Healthy</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">{{ healthy_count }}</div>
+    </div>
+    <div style="border:1px solid var(--color-line); border-radius:4px; padding:16px;">
+      <div style="font-size:12px; color:var(--color-ink-dim);">Model / expert agreement</div>
+      <div style="font-family:var(--font-display); font-size:28px; margin-top:4px;">
+        {% if agreement_pct is not None %}{{ agreement_pct }}%{% else %}—{% endif %}
+        <span style="font-size:13px; color:var(--color-ink-faint);">(n={{ verified_count }})</span>
+      </div>
+    </div>
+  </section>
+
+  <h2 style="font-family:var(--font-display); font-size:18px; margin:0 0 12px;">By sanctuary</h2>
+  <div style="overflow-x:auto; margin-bottom:40px;">
+    <table style="width:100%; border-collapse:collapse; font-size:14px;">
+      <thead>
+        <tr style="border-bottom:1px solid var(--color-line); text-align:left; color:var(--color-ink-dim);">
+          <th style="padding:8px 4px;">Sanctuary</th>
+          <th style="padding:8px 4px;">Area code</th>
+          <th style="padding:8px 4px;">Total</th>
+          <th style="padding:8px 4px;">Bleached</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sanctuary in sanctuaries %}
+        <tr style="border-bottom:1px solid var(--color-line);">
+          <td style="padding:8px 4px;">{{ sanctuary.name }}</td>
+          <td style="padding:8px 4px; color:var(--color-ink-dim);">{{ sanctuary.area_code }}</td>
+          <td style="padding:8px 4px;">{{ sanctuary.total }}</td>
+          <td style="padding:8px 4px;">{{ sanctuary.bleached }}</td>
+        </tr>
+        {% empty %}
+        <tr><td colspan="4" style="padding:16px 4px; color:var(--color-ink-faint);">No sanctuaries found.</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <h2 style="font-family:var(--font-display); font-size:18px; margin:0 0 12px;">Recent submissions</h2>
+  {% include "monitoring/roles/record_review_table.html" %}
+</main>
+{% endblock %}
