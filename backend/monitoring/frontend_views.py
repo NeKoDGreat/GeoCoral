@@ -5,17 +5,20 @@ Separate from monitoring/views.py (the DRF API viewsets). These pages
 call that same API from client-side JS (see static/monitoring/js/).
 """
 
-from django.contrib.auth import login
+from django.contrib import messages
+from django.contrib.auth import login, update_session_auth_hash
+from django.contrib.auth.forms import PasswordChangeForm
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.db.models import Case, Count, F, Q, When
 from django.core.exceptions import PermissionDenied
+from django.http import HttpResponseBadRequest
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse_lazy
 from django.utils import timezone
 from django.views.generic import FormView, TemplateView
 from django.views.generic.edit import CreateView
 
-from .forms import DiverAccountSettingsForm, DiverRegistrationForm
+from .forms import DiverPhoneNumberForm, DiverRegistrationForm
 from .models import CoralRecord, Sanctuary
 from .permissions import can_manage_record, get_user_role, is_staff_role
 
@@ -72,24 +75,50 @@ class DiverHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return context
 
 
-class DiverSettingsView(LoginRequiredMixin, UserPassesTestMixin, FormView):
-    """Allow divers to update their account details."""
+class DiverSettingsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Allow divers to update their phone number and password."""
     template_name = "monitoring/roles/diver/settings.html"
-    form_class = DiverAccountSettingsForm
-    success_url = reverse_lazy("monitoring:diver_settings")
     login_url = "login"
 
     def test_func(self):
         return get_user_role(self.request.user) == "diver"
 
-    def get_form_kwargs(self):
-        kwargs = super().get_form_kwargs()
-        kwargs["instance"] = self.request.user
-        return kwargs
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault(
+            "phone_form",
+            DiverPhoneNumberForm(instance=self.request.user.profile),
+        )
+        context.setdefault(
+            "password_form",
+            PasswordChangeForm(self.request.user),
+        )
+        return context
 
-    def form_valid(self, form):
-        form.save()
-        return super().form_valid(form)
+    def post(self, request, *args, **kwargs):
+        action = request.POST.get("action")
+        if action == "phone":
+            form = DiverPhoneNumberForm(
+                request.POST,
+                instance=request.user.profile,
+            )
+            if form.is_valid():
+                form.save()
+                messages.success(request, "Phone number updated.")
+                return redirect("monitoring:diver_settings")
+            context = self.get_context_data(phone_form=form)
+        elif action == "password":
+            form = PasswordChangeForm(request.user, request.POST)
+            if form.is_valid():
+                user = form.save()
+                update_session_auth_hash(request, user)
+                messages.success(request, "Password changed.")
+                return redirect("monitoring:diver_settings")
+            context = self.get_context_data(password_form=form)
+        else:
+            return HttpResponseBadRequest("Invalid settings action.")
+
+        return self.render_to_response(context)
 
 
 class RegisterView(CreateView):

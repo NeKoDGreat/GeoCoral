@@ -62,7 +62,7 @@ class CoralRecordUploadSerializer(serializers.ModelSerializer):
         model = CoralRecord
         fields = [
             "image", "latitude", "longitude", "captured_at", "depth_m",
-            "sanctuary", "area_code", "gps_source",
+            "sanctuary", "gps_source",
         ]
 
     def validate_latitude(self, value):
@@ -79,4 +79,5 @@ class CoralRecordUploadSerializer(serializers.ModelSerializer):
         lat = validated_data.pop("latitude")
         lon = validated_data.pop("longitude")
         validated_data["location"] = Point(lon, lat, srid=4326)  # GEOS Point is (x=lon, y=lat)
+        validated_data["area_code"] = validated_data["sanctuary"].area_code
         return super().create(validated_data)

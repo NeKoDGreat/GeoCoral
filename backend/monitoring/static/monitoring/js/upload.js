@@ -50,10 +50,19 @@ async function loadSanctuaries() {
     const option = document.createElement("option");
     option.value = s.id;
     option.textContent = `${s.name} (${s.area_code})`;
+    option.dataset.areaCode = s.area_code;
     select.appendChild(option);
   });
 }
 loadSanctuaries();
+
+const sanctuarySelect = document.getElementById("sanctuary");
+const areaCodeInput = document.getElementById("area_code");
+
+sanctuarySelect.addEventListener("change", () => {
+  areaCodeInput.value =
+    sanctuarySelect.selectedOptions[0]?.dataset.areaCode || "";
+});
 
 function getCsrfToken() {
   return document.querySelector("[name=csrfmiddlewaretoken]").value;
@@ -98,8 +107,7 @@ document.getElementById("upload-form").addEventListener("submit", async (event) 
   formData.append("latitude", latlon.lat);
   formData.append("longitude", latlon.lon);
   formData.append("captured_at", document.getElementById("captured_at").value);
-  formData.append("sanctuary", document.getElementById("sanctuary").value);
-  formData.append("area_code", document.getElementById("area_code").value);
+  formData.append("sanctuary", sanctuarySelect.value);
   const depth = document.getElementById("depth_m").value;
   if (depth) formData.append("depth_m", depth);
   formData.append("gps_source", gpsSource);

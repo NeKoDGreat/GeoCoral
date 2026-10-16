@@ -16,7 +16,10 @@ class RolePermissionTests(TestCase):
         self.manager_profile = UserProfile.objects.create(
             user=self.manager, role="sanctuary_manager"
         )
-        self.diver = User.objects.create_user(username="diver")
+        self.diver = User.objects.create_user(
+            username="diver",
+            password="Initial-Password-483!",
+        )
         UserProfile.objects.create(user=self.diver, role="diver")
         self.assigned = Sanctuary.objects.create(name="Assigned", area_code="ASG")
         self.other = Sanctuary.objects.create(name="Other", area_code="OTH")
@@ -118,17 +121,38 @@ class RolePermissionTests(TestCase):
         self.assertTemplateUsed(response, "monitoring/roles/diver/settings.html")
 
         response = self.client.post(settings_url, {
-            "username": "updated-diver",
-            "email": "diver@example.com",
+            "action": "phone",
             "phone_number": "+639171234567",
         })
         self.assertRedirects(response, settings_url)
 
-        self.diver.refresh_from_db()
         self.diver.profile.refresh_from_db()
-        self.assertEqual(self.diver.username, "updated-diver")
-        self.assertEqual(self.diver.email, "diver@example.com")
         self.assertEqual(self.diver.profile.phone_number, "+639171234567")
+        self.assertEqual(self.diver.username, "diver")
+        self.assertEqual(self.diver.email, "")
+
+        response = self.client.post(settings_url, {
+            "action": "password",
+            "old_password": "Initial-Password-483!",
+            "new_password1": "New-Secure-Password-920!",
+            "new_password2": "New-Secure-Password-920!",
+        })
+        self.assertRedirects(response, settings_url)
+        self.diver.refresh_from_db()
+        self.assertTrue(self.diver.check_password("New-Secure-Password-920!"))
+
+    def test_diver_password_change_requires_current_password(self):
+        self.client.force_login(self.diver)
+        response = self.client.post(reverse("monitoring:diver_settings"), {
+            "action": "password",
+            "old_password": "incorrect",
+            "new_password1": "New-Secure-Password-920!",
+            "new_password2": "New-Secure-Password-920!",
+        })
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, "Your old password was entered incorrectly")
+        self.diver.refresh_from_db()
+        self.assertTrue(self.diver.check_password("Initial-Password-483!"))
 
     def test_account_settings_are_restricted_to_divers(self):
         self.client.force_login(self.manager)

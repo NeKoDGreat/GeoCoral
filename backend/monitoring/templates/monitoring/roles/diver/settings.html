@@ -3,31 +3,97 @@
 
 {% block content %}
 <main class="settings-page">
-  <p class="settings-eyebrow">Diver account</p>
   <h1>Settings</h1>
-  <p class="settings-intro">Update the account details associated with your GeoCoral profile.</p>
+  <p class="settings-intro">Update your phone number or change your password.</p>
 
-  <form method="post" class="settings-form">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="settings-message">{{ message }}</div>
+    {% endfor %}
+  {% endif %}
 
+  <section class="settings-section">
+    <h2>Account information</h2>
     <div class="settings-field">
-      <label for="{{ form.username.id_for_label }}">Username</label>
-      {{ form.username }}
-      {{ form.username.errors }}
+      <label for="settings-username">Username</label>
+      <input type="text" id="settings-username" value="{{ user.username }}" readonly>
     </div>
     <div class="settings-field">
-      <label for="{{ form.email.id_for_label }}">Email</label>
-      {{ form.email }}
-      {{ form.email.errors }}
+      <label for="settings-email">Email</label>
+      <input type="email" id="settings-email" value="{{ user.email }}" readonly>
     </div>
-    <div class="settings-field">
-      <label for="{{ form.phone_number.id_for_label }}">Phone number</label>
-      {{ form.phone_number }}
-      {{ form.phone_number.errors }}
-    </div>
+    <form method="post" class="settings-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="phone">
+      {{ phone_form.non_field_errors }}
+      <div class="settings-field">
+        <label for="{{ phone_form.phone_number.id_for_label }}">Phone number</label>
+        {{ phone_form.phone_number }}
+        {{ phone_form.phone_number.errors }}
+      </div>
+      <button type="submit" class="btn">Save phone number</button>
+    </form>
+  </section>
 
-    <button type="submit" class="btn">Save changes</button>
-  </form>
+  <section class="settings-section">
+    <h2>Change password</h2>
+    <form method="post" class="settings-form">
+      {% csrf_token %}
+      <input type="hidden" name="action" value="password">
+      {{ password_form.non_field_errors }}
+      <div class="settings-field">
+        <label for="{{ password_form.old_password.id_for_label }}">Current password</label>
+        <div class="password-input">
+          {{ password_form.old_password }}
+          <button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="{{ password_form.old_password.id_for_label }}">
+            <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg class="eye-off-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+              <path d="M9.9 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.9M6.2 6.2C3.5 8.1 2 12 2 12s3.6 7 10 7c1 0 1.9-.2 2.8-.5"></path>
+            </svg>
+          </button>
+        </div>
+        {{ password_form.old_password.errors }}
+      </div>
+      <div class="settings-field">
+        <label for="{{ password_form.new_password1.id_for_label }}">New password</label>
+        <div class="password-input">
+          {{ password_form.new_password1 }}
+          <button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="{{ password_form.new_password1.id_for_label }}">
+            <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg class="eye-off-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+              <path d="M9.9 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.9M6.2 6.2C3.5 8.1 2 12 2 12s3.6 7 10 7c1 0 1.9-.2 2.8-.5"></path>
+            </svg>
+          </button>
+        </div>
+        {{ password_form.new_password1.errors }}
+      </div>
+      <div class="settings-field">
+        <label for="{{ password_form.new_password2.id_for_label }}">Confirm new password</label>
+        <div class="password-input">
+          {{ password_form.new_password2 }}
+          <button class="password-toggle" type="button" aria-label="Show password" aria-pressed="false" aria-controls="{{ password_form.new_password2.id_for_label }}">
+            <svg class="eye-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M2 12s3.6-7 10-7 10 7 10 7-3.6 7-10 7S2 12 2 12Z"></path>
+              <circle cx="12" cy="12" r="3"></circle>
+            </svg>
+            <svg class="eye-off-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="m3 3 18 18M10.6 10.6a2 2 0 0 0 2.8 2.8"></path>
+              <path d="M9.9 5.2A10.9 10.9 0 0 1 12 5c6.4 0 10 7 10 7a15.8 15.8 0 0 1-3.1 3.9M6.2 6.2C3.5 8.1 2 12 2 12s3.6 7 10 7c1 0 1.9-.2 2.8-.5"></path>
+            </svg>
+          </button>
+        </div>
+        {{ password_form.new_password2.errors }}
+      </div>
+      <button type="submit" class="btn">Change password</button>
+    </form>
+  </section>
 </main>
 {% endblock %}
