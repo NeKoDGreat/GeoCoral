@@ -75,13 +75,17 @@ class DiverHomeView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
         return context
 
 
-class DiverSettingsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
-    """Allow divers to update their phone number and password."""
+class AccountSettingsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
+    """Allow application users to update their phone number and password."""
     template_name = "monitoring/roles/diver/settings.html"
     login_url = "login"
 
     def test_func(self):
-        return get_user_role(self.request.user) == "diver"
+        return get_user_role(self.request.user) in {
+            "diver",
+            "cenro_staff",
+            "sanctuary_manager",
+        }
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -105,7 +109,7 @@ class DiverSettingsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
             if form.is_valid():
                 form.save()
                 messages.success(request, "Phone number updated.")
-                return redirect("monitoring:diver_settings")
+                return redirect("monitoring:settings")
             context = self.get_context_data(phone_form=form)
         elif action == "password":
             form = PasswordChangeForm(request.user, request.POST)
@@ -113,7 +117,7 @@ class DiverSettingsView(LoginRequiredMixin, UserPassesTestMixin, TemplateView):
                 user = form.save()
                 update_session_auth_hash(request, user)
                 messages.success(request, "Password changed.")
-                return redirect("monitoring:diver_settings")
+                return redirect("monitoring:settings")
             context = self.get_context_data(password_form=form)
         else:
             return HttpResponseBadRequest("Invalid settings action.")

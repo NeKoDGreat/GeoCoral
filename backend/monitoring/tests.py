@@ -114,7 +114,7 @@ class RolePermissionTests(TestCase):
 
     def test_diver_can_update_account_settings(self):
         self.client.force_login(self.diver)
-        settings_url = reverse("monitoring:diver_settings")
+        settings_url = reverse("monitoring:settings")
 
         response = self.client.get(settings_url)
         self.assertEqual(response.status_code, 200)
@@ -143,7 +143,7 @@ class RolePermissionTests(TestCase):
 
     def test_diver_password_change_requires_current_password(self):
         self.client.force_login(self.diver)
-        response = self.client.post(reverse("monitoring:diver_settings"), {
+        response = self.client.post(reverse("monitoring:settings"), {
             "action": "password",
             "old_password": "incorrect",
             "new_password1": "New-Secure-Password-920!",
@@ -154,7 +154,15 @@ class RolePermissionTests(TestCase):
         self.diver.refresh_from_db()
         self.assertTrue(self.diver.check_password("Initial-Password-483!"))
 
-    def test_account_settings_are_restricted_to_divers(self):
+    def test_account_settings_are_available_to_staff_roles(self):
         self.client.force_login(self.manager)
-        response = self.client.get(reverse("monitoring:diver_settings"))
-        self.assertEqual(response.status_code, 403)
+        response = self.client.get(reverse("monitoring:settings"))
+        self.assertEqual(response.status_code, 200)
+
+        response = self.client.post(reverse("monitoring:settings"), {
+            "action": "phone",
+            "phone_number": "+639171234567",
+        })
+        self.assertRedirects(response, reverse("monitoring:settings"))
+        self.manager.profile.refresh_from_db()
+        self.assertEqual(self.manager.profile.phone_number, "+639171234567")

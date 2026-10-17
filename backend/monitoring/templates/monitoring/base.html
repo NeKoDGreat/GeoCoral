@@ -20,28 +20,20 @@
           {% if user_role == 'diver' %}My History{% else %}Workspace{% endif %}
         </a>
         <a href="{% url 'monitoring:upload' %}" class="{% if request.resolver_match.url_name == 'upload' %}current{% endif %}">Submit Photo</a>
-        {% if user_role == 'diver' %}
-          <details class="user-menu">
-            <summary class="user-menu-trigger">
-              <span class="user">{{ user.username }}</span>
-              <span class="user-menu-chevron" aria-hidden="true"></span>
-            </summary>
-            <div class="user-menu-panel">
-              <span class="user-menu-name">{{ user.username }}</span>
-              <a href="{% url 'monitoring:diver_settings' %}" class="{% if request.resolver_match.url_name == 'diver_settings' %}current{% endif %}">Settings</a>
-              <form method="post" action="{% url 'logout' %}">
-                {% csrf_token %}
-                <button type="submit">Logout</button>
-              </form>
-            </div>
-          </details>
-        {% else %}
-          <span class="user">{{ user.username }}</span>
-          <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
-            {% csrf_token %}
-            <button type="submit" style="background:none; border:none; padding:0; color:var(--color-ink-dim); font-family:var(--font-body); font-size:14px; cursor:pointer;">Log out</button>
-          </form>
-        {% endif %}
+        <details class="user-menu">
+          <summary class="user-menu-trigger">
+            <span class="user">{{ user.username }}</span>
+            <span class="user-menu-chevron" aria-hidden="true"></span>
+          </summary>
+          <div class="user-menu-panel">
+            <span class="user-menu-name">{{ user.username }}</span>
+            <a href="{% url 'monitoring:settings' %}" class="{% if request.resolver_match.url_name == 'settings' or request.resolver_match.url_name == 'diver_settings' %}current{% endif %}">Settings</a>
+            <form method="post" action="{% url 'logout' %}">
+              {% csrf_token %}
+              <button type="submit">Logout</button>
+            </form>
+          </div>
+        </details>
       {% else %}
         <a href="{% url 'login' %}?next={{ request.path }}">Log in</a>
         <a href="{% url 'monitoring:register' %}">Register</a>
