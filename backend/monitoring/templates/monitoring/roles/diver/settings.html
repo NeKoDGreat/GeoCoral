@@ -1,0 +1,33 @@
+{% extends "monitoring/base.html" %}
+{% block title %}Account settings — GeoCoral{% endblock %}
+
+{% block content %}
+<main class="settings-page">
+  <p class="settings-eyebrow">Diver account</p>
+  <h1>Settings</h1>
+  <p class="settings-intro">Update the account details associated with your GeoCoral profile.</p>
+
+  <form method="post" class="settings-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+
+    <div class="settings-field">
+      <label for="{{ form.username.id_for_label }}">Username</label>
+      {{ form.username }}
+      {{ form.username.errors }}
+    </div>
+    <div class="settings-field">
+      <label for="{{ form.email.id_for_label }}">Email</label>
+      {{ form.email }}
+      {{ form.email.errors }}
+    </div>
+    <div class="settings-field">
+      <label for="{{ form.phone_number.id_for_label }}">Phone number</label>
+      {{ form.phone_number }}
+      {{ form.phone_number.errors }}
+    </div>
+
+    <button type="submit" class="btn">Save changes</button>
+  </form>
+</main>
+{% endblock %}

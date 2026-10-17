@@ -167,6 +167,10 @@ GEOCORAL_MODEL_PATH = os.environ.get(
 )
 
 LOGIN_URL = "login"
+<<<<<<< HEAD
 LOGIN_REDIRECT_URL = "monitoring:map"
 GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH") or None
 GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH") or None
+=======
+LOGIN_REDIRECT_URL = "monitoring:role_home"
+>>>>>>> origin/vinceChanges

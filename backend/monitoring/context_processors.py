@@ -1,14 +1,19 @@
 """
 GeoCoral — template context processors.
 
-Makes is_staff_role(request.user) available as {{ user_is_staff_role }}
-in every template (registered in settings.py TEMPLATES), so base.html
-can conditionally show the Dashboard nav link without every view having
-to pass this explicitly.
+Makes the authenticated user's application role and workspace URL
+available to the shared navigation template.
 """
 
-from .permissions import is_staff_role
+from .permissions import get_user_role
 
 
 def role_flags(request):
-    return {"user_is_staff_role": is_staff_role(request.user)}
+    return {
+        "user_role": get_user_role(request.user),
+        "role_home_url": (
+            "monitoring:diver_home"
+            if get_user_role(request.user) == "diver"
+            else "monitoring:dashboard"
+        ),
+    }

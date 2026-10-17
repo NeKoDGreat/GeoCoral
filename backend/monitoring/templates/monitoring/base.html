@@ -14,19 +14,37 @@
   <div class="topbar">
     <div class="wordmark">GeoCoral<small>Samal Island Reef Monitoring</small></div>
     <nav class="nav">
-      <a href="{% url 'monitoring:map' %}" class="{% if request.resolver_match.url_name == 'map' %}current{% endif %}">Map</a>
-            {% if user.is_authenticated %}
-        <a href="{% url 'monitoring:upload' %}" class="{% if request.resolver_match.url_name == 'upload' %}current{% endif %}">Submit photo</a>
-        {% if user_is_staff_role %}
-          <a href="{% url 'monitoring:dashboard' %}" class="{% if request.resolver_match.url_name == 'dashboard' %}current{% endif %}">Dashboard</a>
+      {% if user.is_authenticated %}
+        <a href="{% url 'monitoring:map' %}" class="{% if request.resolver_match.url_name == 'map' %}current{% endif %}">Map</a>
+        <a href="{% url role_home_url %}" class="{% if request.resolver_match.url_name == 'dashboard' or request.resolver_match.url_name == 'diver_home' %}current{% endif %}">
+          {% if user_role == 'diver' %}My History{% else %}Workspace{% endif %}
+        </a>
+        <a href="{% url 'monitoring:upload' %}" class="{% if request.resolver_match.url_name == 'upload' %}current{% endif %}">Submit Photo</a>
+        {% if user_role == 'diver' %}
+          <details class="user-menu">
+            <summary class="user-menu-trigger">
+              <span class="user">{{ user.username }}</span>
+              <span class="user-menu-chevron" aria-hidden="true"></span>
+            </summary>
+            <div class="user-menu-panel">
+              <span class="user-menu-name">{{ user.username }}</span>
+              <a href="{% url 'monitoring:diver_settings' %}" class="{% if request.resolver_match.url_name == 'diver_settings' %}current{% endif %}">Settings</a>
+              <form method="post" action="{% url 'logout' %}">
+                {% csrf_token %}
+                <button type="submit">Logout</button>
+              </form>
+            </div>
+          </details>
+        {% else %}
+          <span class="user">{{ user.username }}</span>
+          <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
+            {% csrf_token %}
+            <button type="submit" style="background:none; border:none; padding:0; color:var(--color-ink-dim); font-family:var(--font-body); font-size:14px; cursor:pointer;">Log out</button>
+          </form>
         {% endif %}
-        <span class="user">{{ user.username }}</span>
-       <form method="post" action="{% url 'logout' %}" style="display:inline; margin:0;">
-  {% csrf_token %}
-  <button type="submit" style="background:none; border:none; padding:0; color:var(--color-ink-dim); font-family:var(--font-body); font-size:14px; cursor:pointer;">Log out</button>
-</form>
       {% else %}
         <a href="{% url 'login' %}?next={{ request.path }}">Log in</a>
+        <a href="{% url 'monitoring:register' %}">Register</a>
       {% endif %}
       <button class="theme-toggle" type="button" aria-label="Toggle dark and light mode" aria-pressed="false">
         <span class="toggle-track">
@@ -66,6 +84,141 @@
           localStorage.setItem('geocoral-theme', nextTheme);
         });
       }
+    })();
+
+    document.querySelectorAll('.password-toggle').forEach(function (button) {
+      const targetId = button.getAttribute('aria-controls');
+      const password = targetId ? document.getElementById(targetId) : null;
+      if (!password) return;
+
+      function updateToggleVisibility() {
+        const hasValue = password.value.length > 0;
+        button.hidden = !hasValue;
+        if (!hasValue) {
+          password.type = 'password';
+          button.setAttribute('aria-pressed', 'false');
+          button.setAttribute('aria-label', 'Show password');
+        }
+      }
+
+      updateToggleVisibility();
+      password.addEventListener('input', updateToggleVisibility);
+
+      button.addEventListener('click', function () {
+        const isVisible = password.type === 'text';
+        password.type = isVisible ? 'password' : 'text';
+        button.setAttribute('aria-pressed', String(!isVisible));
+        button.setAttribute('aria-label', isVisible ? 'Show password' : 'Hide password');
+      });
+    });
+
+    (function () {
+      const modal = document.getElementById('forgotPasswordModal');
+      const trigger = document.querySelector('.forgot-password-link');
+      const closeButton = modal ? modal.querySelector('.modal-close') : null;
+      const closeSuccessButton = modal ? modal.querySelector('.modal-close-success') : null;
+      const steps = modal ? Array.from(modal.querySelectorAll('.forgot-password-step')) : [];
+      const nextButtons = modal ? Array.from(modal.querySelectorAll('.modal-next')) : [];
+      const backButtons = modal ? Array.from(modal.querySelectorAll('.modal-back')) : [];
+      const resetButton = modal ? modal.querySelector('.modal-submit') : null;
+
+      function setStep(name) {
+        if (!modal) return;
+        steps.forEach(function (step) {
+          step.classList.toggle('is-active', step.dataset.step === name);
+        });
+      }
+
+      function openModal() {
+        if (!modal) return;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        setStep('lookup');
+      }
+
+      function closeModal() {
+        if (!modal) return;
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+      }
+
+      if (trigger) {
+        trigger.addEventListener('click', function (event) {
+          event.preventDefault();
+          openModal();
+        });
+      }
+
+      if (closeButton) {
+        closeButton.addEventListener('click', closeModal);
+      }
+
+      if (closeSuccessButton) {
+        closeSuccessButton.addEventListener('click', closeModal);
+      }
+
+      if (modal) {
+        modal.addEventListener('click', function (event) {
+          if (event.target === modal) {
+            closeModal();
+          }
+        });
+      }
+
+      nextButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          const nextStep = button.dataset.nextStep;
+          if (!nextStep) return;
+
+          const activeStep = modal.querySelector('.forgot-password-step.is-active');
+          const requiredInput = activeStep ? activeStep.querySelector('input[required]') : null;
+
+          if (requiredInput && !requiredInput.value.trim()) {
+            requiredInput.reportValidity();
+            return;
+          }
+
+          setStep(nextStep);
+        });
+      });
+
+      backButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          const previousStep = button.dataset.backStep;
+          if (!previousStep) return;
+          setStep(previousStep);
+        });
+      });
+
+      if (resetButton) {
+        resetButton.addEventListener('click', function () {
+          const newPassword = document.getElementById('forgot-password-new');
+          const confirmPassword = document.getElementById('forgot-password-confirm');
+
+          if (!newPassword || !confirmPassword) {
+            return;
+          }
+
+          if (!newPassword.value || !confirmPassword.value) {
+            return;
+          }
+
+          if (newPassword.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+            confirmPassword.reportValidity();
+            return;
+          }
+
+          confirmPassword.setCustomValidity('');
+          setStep('success');
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape' && modal && modal.classList.contains('is-open')) {
+          closeModal();
+        }
+      });
     })();
   </script>
 

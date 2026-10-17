@@ -6,8 +6,8 @@ Mirrors the Methodology chapter:
   - CoralRecord: one classification result per submitted photo, GPS-tagged
     (System Architecture: "integration of classification results with
     their corresponding geographic coordinates for geomapping")
-  - UserProfile: distinguishes CENRO staff / sanctuary managers / admins,
-    the primary intended end users named in the Research Locale section
+  - UserProfile: distinguishes CENRO staff, sanctuary managers, and divers,
+    the intended end users named in the Research Locale section
 """
 
 from django.conf import settings
@@ -27,7 +27,7 @@ class Sanctuary(models.Model):
 
     # Polygon boundary, enables "is this point inside sanctuary X" queries
     # and spatial filtering on the geomapping interface. Optional — can be
-    # filled in later via the admin's map widget once boundaries are surveyed.
+    # filled in later via the GIS maintenance site once boundaries are surveyed.
     boundary = gis_models.PolygonField(srid=4326, null=True, blank=True)
 
     # A representative point (e.g. the sanctuary's main marker/centroid)
@@ -45,14 +45,12 @@ class Sanctuary(models.Model):
 
 
 class UserProfile(models.Model):
-    """Extends Django's built-in User with the roles named in the
-    Research Locale section: CENRO staff and sanctuary managers."""
+    """Extends Django's built-in User with the application's three roles."""
 
     ROLE_CHOICES = [
         ("cenro_staff", "CENRO Staff"),
         ("sanctuary_manager", "Sanctuary Manager"),
         ("diver", "Authorized Diver"),
-        ("admin", "Administrator"),
     ]
 
     user = models.OneToOneField(

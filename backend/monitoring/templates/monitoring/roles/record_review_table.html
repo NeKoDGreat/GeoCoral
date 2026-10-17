@@ -1,0 +1,41 @@
+<div style="overflow-x:auto;">
+  <table style="width:100%; border-collapse:collapse; font-size:14px;">
+    <thead>
+      <tr style="border-bottom:1px solid var(--color-line); text-align:left; color:var(--color-ink-dim);">
+        <th style="padding:8px 4px;">Date</th>
+        <th style="padding:8px 4px;">Sanctuary</th>
+        <th style="padding:8px 4px;">Prediction</th>
+        <th style="padding:8px 4px;">Confidence</th>
+        <th style="padding:8px 4px;">Verified as</th>
+        <th style="padding:8px 4px;">Review</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for record in records %}
+      <tr style="border-bottom:1px solid var(--color-line);">
+        <td style="padding:8px 4px; color:var(--color-ink-dim);">{{ record.captured_at|date:"Y-m-d" }}</td>
+        <td style="padding:8px 4px;">{{ record.sanctuary.name }}</td>
+        <td style="padding:8px 4px;">{{ record.get_predicted_label_display }}</td>
+        <td style="padding:8px 4px;">{{ record.confidence|floatformat:1 }}</td>
+        <td style="padding:8px 4px;">
+          {% if record.verified_label %}{{ record.get_verified_label_display }}{% else %}<span style="color:var(--color-ink-faint);">Not reviewed</span>{% endif %}
+        </td>
+        <td style="padding:8px 4px;">
+          <form method="post" action="{% url 'monitoring:verify_record' record.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="verified_label" value="healthy">
+            <button type="submit" class="btn-secondary" style="padding:4px 8px; font-size:12px; cursor:pointer;">Healthy</button>
+          </form>
+          <form method="post" action="{% url 'monitoring:verify_record' record.id %}" style="display:inline;">
+            {% csrf_token %}
+            <input type="hidden" name="verified_label" value="bleached">
+            <button type="submit" class="btn-secondary" style="padding:4px 8px; font-size:12px; cursor:pointer;">Bleached</button>
+          </form>
+        </td>
+      </tr>
+      {% empty %}
+      <tr><td colspan="6" style="padding:16px 4px; color:var(--color-ink-faint);">No submissions to review.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>

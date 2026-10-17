@@ -4,11 +4,8 @@ Run after migrations with:
     python manage.py seed_users
 """
 
-from django.apps import apps
 from django.conf import settings
 from django.contrib.auth import get_user_model
-from django.contrib.auth.models import Permission
-from django.contrib.contenttypes.models import ContentType
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
@@ -24,7 +21,6 @@ USERS = (
         "sanctuary_manager",
     ),
     ("diver", "Authorized Diver", "geocoraldiver", "diver"),
-    ("admin", "Administrator", "geocoraladmin", "admin"),
 )
 
 
@@ -39,7 +35,6 @@ class Command(BaseCommand):
             )
 
         user_model = get_user_model()
-        admin_permissions = self._admin_permissions()
 
         with transaction.atomic():
             for username, label, password, role in USERS:
@@ -51,7 +46,7 @@ class Command(BaseCommand):
                 )
                 user.email = f"{username}@example.invalid"
                 user.is_active = True
-                user.is_staff = role == "admin"
+                user.is_staff = False
                 user.is_superuser = False
                 user.set_password(password)
                 user.save()
@@ -61,10 +56,7 @@ class Command(BaseCommand):
                     defaults={"role": role, "phone_number": ""},
                 )
 
-                if role == "admin":
-                    user.user_permissions.set(admin_permissions)
-                else:
-                    user.user_permissions.clear()
+                user.user_permissions.clear()
 
                 status = "Created" if created else "Updated"
                 self.stdout.write(f"{status}: {label} ({username})")
@@ -73,22 +65,3 @@ class Command(BaseCommand):
             "Shared local-development accounts are ready. "
             "Running this command again resets their passwords to the documented values."
         ))
-
-    @staticmethod
-    def _admin_permissions():
-        permissions = []
-        for model in apps.get_app_config("monitoring").get_models():
-            content_type = ContentType.objects.get_for_model(model)
-            for action in ("view", "add", "change"):
-                permissions.append(Permission.objects.get(
-                    content_type=content_type,
-                    codename=f"{action}_{model._meta.model_name}",
-                ))
-
-        user_model = get_user_model()
-        user_content_type = ContentType.objects.get_for_model(user_model)
-        permissions.append(Permission.objects.get(
-            content_type=user_content_type,
-            codename=f"view_{user_model._meta.model_name}",
-        ))
-        return permissions

@@ -60,14 +60,13 @@ pip install -r requirements.txt
 up — that one has TensorFlow, this one has Django. Both live in the
 same virtual environment if you're using the one you already set up.)
 
-## 3. Run migrations and create an admin login
+## 3. Run migrations and create the three application roles
 
 ```bash
 python manage.py migrate
-python manage.py createsuperuser
 ```
 
-For local project testing, create the four shared profile accounts after
+For local project testing, create the three shared profile accounts after
 migrations:
 
 ```powershell
@@ -83,13 +82,29 @@ these documented values:
 | CENRO Staff | `cenro_staff` | `geocoralcenrostaff` |
 | Sanctuary Manager | `sanctuary_manager` | `geocoralsanctuarymanager` |
 | Authorized Diver | `diver` | `geocoraldiver` |
-| Administrator | `admin` | `geocoraladmin` |
 
-The Administrator profile can view, add, and edit GeoCoral records in
-Django admin, but is not a superuser and cannot delete records. These
-shared credentials are intentionally for local development only; do not
-enable or use them in production. The accounts use non-deliverable
-`example.invalid` email addresses.
+These shared credentials are intentionally for local development only;
+do not enable or use them in production. The accounts use non-deliverable
+`example.invalid` email addresses. The removed Administrator application
+role is not seeded; existing profiles with that legacy role are demoted to
+Divers by the migration.
+
+The app routes each user to a separate workspace after login:
+
+- **CENRO:** system-wide totals, sanctuary breakdown, and record verification.
+- **Sanctuary Manager:** summary and verification actions limited to
+  sanctuaries assigned to that manager.
+- **Diver:** photo submission and a history of that diver's own submissions.
+
+Role-specific templates are in
+`monitoring/templates/monitoring/roles/cenro/`,
+`monitoring/templates/monitoring/roles/sanctuary_manager/`, and
+`monitoring/templates/monitoring/roles/diver/`.
+
+Manager accounts need assigned sanctuaries to see records. A technical
+Django superuser can optionally be created with
+`python manage.py createsuperuser` for backend maintenance, but it is not
+a fourth GeoCoral application role.
 
 ## 4. Seed placeholder sanctuaries
 
@@ -111,10 +126,13 @@ python manage.py runserver
 
 ## 6. Try it out
 
-- **Admin site:** http://127.0.0.1:8000/admin/ — log in with your
-  superuser account. `CoralRecord` and `Sanctuary` both show an
-  interactive map widget for editing location fields, since they're
-  registered with `GISModelAdmin`.
+- **Role workspaces:** log in at http://127.0.0.1:8000/accounts/login/;
+  each account is routed to its role-specific interface.
+- **Optional Django maintenance site:** http://127.0.0.1:8000/admin/ —
+  log in with a technical superuser to assign manager sanctuaries or edit
+  GIS records. This is not an application role/interface. Update the
+  placeholder user credentials if using the seeded users; only the
+  technical superuser can access the site.
 - **Browsable API:** http://127.0.0.1:8000/api/coral-records/ and
   http://127.0.0.1:8000/api/sanctuaries/ — DRF's browsable API lets
   you test the upload endpoint (`POST /api/coral-records/`) right from
@@ -127,7 +145,7 @@ python manage.py runserver
 | `/api/sanctuaries/` | GET | none | List sanctuaries (for map + filters) |
 | `/api/coral-records/` | GET | none | List classification results, filterable by `?sanctuary=`, `?label=healthy\|bleached`, `?since=<ISO datetime>` |
 | `/api/coral-records/` | POST | required | Upload a photo + GPS + field metadata → runs the classifier → returns the result |
-| `/api/coral-records/<id>/` | GET/PATCH/DELETE | none/required | Detail, update (e.g. expert verification), delete |
+| `/api/coral-records/<id>/` | GET/PATCH/DELETE | none/CENRO or assigned manager | Detail, update (e.g. expert verification), delete |
 
 The upload endpoint expects `multipart/form-data` with: `image`,
 `latitude`, `longitude`, `captured_at` (ISO datetime), `depth_m`,
