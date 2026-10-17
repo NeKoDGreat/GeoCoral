@@ -1,6 +1,4 @@
-/* GeoCoral — visual identity
-   Deep reef-water background, living-coral / bleached-bone accents
-   pulled directly from the subject matter rather than generic UI colors. */
+
 
 :root {
   --color-deep: #0a1f2b;
@@ -21,17 +19,37 @@
   --font-mono: "IBM Plex Mono", ui-monospace, monospace;
 }
 
+html.light-mode {
+  --color-deep: #eef7f3;
+  --color-panel: #e2f0ee;
+  --color-panel-raised: rgba(255, 255, 255, 0.56);
+  --color-line: rgba(10, 31, 43, 0.14);
+  --color-ink: #0a1f2b;
+  --color-ink-dim: rgba(10, 31, 43, 0.72);
+  --color-ink-faint: rgba(10, 31, 43, 0.48);
+  --color-coral: #ff7b69;
+  --color-coral-dim: rgba(255, 123, 105, 0.14);
+  --color-bone: #d9ccb9;
+  --color-bone-dim: rgba(10, 31, 43, 0.08);
+  --color-focus: #1db58c;
+}
+
 * { box-sizing: border-box; }
 
 html, body {
   margin: 0;
   padding: 0;
-  height: 100%;
+  min-height: 100%;
   background: var(--color-deep);
   color: var(--color-ink);
   font-family: var(--font-body);
   font-size: 16px;
   line-height: 1.5;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+body {
+  min-height: 100vh;
 }
 
 a { color: var(--color-coral); text-decoration: none; }
@@ -76,6 +94,54 @@ a:hover { text-decoration: underline; }
   align-items: center;
   gap: 20px;
   font-size: 14px;
+}
+
+.theme-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--color-line);
+  background: transparent;
+  color: var(--color-ink-dim);
+  border-radius: 999px;
+  padding: 6px 10px;
+  font: inherit;
+  cursor: pointer;
+}
+
+.theme-toggle:hover {
+  border-color: var(--color-focus);
+}
+
+.toggle-track {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+  border-radius: 999px;
+  background: var(--color-panel);
+  border: 1px solid var(--color-line);
+}
+
+.toggle-thumb {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--color-coral);
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+
+html.light-mode .toggle-thumb {
+  transform: translateX(16px);
+  background: var(--color-focus);
+}
+
+.toggle-label {
+  font-size: 12px;
+  line-height: 1;
 }
 
 .nav a { color: var(--color-ink-dim); }
@@ -281,13 +347,71 @@ select:focus, input:focus, textarea:focus { border-color: var(--color-focus); }
 }
 
 .login-shell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   max-width: 360px;
   margin: 96px auto;
   padding: 0 24px;
+  text-align: center;
 }
-.login-shell h1 { font-family: var(--font-display); font-size: 26px; margin-bottom: 24px; }
-.login-shell .field { margin-bottom: 16px; }
-.login-shell input { width: 100%; }
+.login-shell form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.login-shell h1 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  margin-bottom: 24px;
+  text-transform: capitalize;
+}
+.login-shell .field {
+  width: 100%;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.login-shell .forgot-password {
+  width: 100%;
+  margin-top: -10px;
+  margin-bottom: 16px;
+  text-align: right;
+  font-size: 13px;
+}
+.login-shell .forgot-password a {
+  color: var(--color-focus);
+}
+.login-shell .field label {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+.login-shell input {
+  width: 100%;
+  display: block;
+  margin: 0;
+}
+.login-shell .btn {
+  width: 100%;
+  background: #6fe3c8;
+  color: #0a1f2b;
+  text-transform: capitalize;
+}
+.login-shell .btn:hover {
+  background: #8ef0d7;
+}
+.login-shell .auth-switch {
+  margin: 20px 0 0;
+  font-size: 13px;
+  color: var(--color-ink-dim);
+  background: transparent;
+}
+.login-shell .auth-switch a {
+  color: var(--color-focus);
+}
 
 /* --- Tables: horizontal scroll on narrow screens instead of
    squeezing/overflowing the page --- */
@@ -349,4 +473,63 @@ table { display: block; overflow-x: auto; white-space: nowrap; }
     grid-template-columns: 1fr !important;
   }
   .wordmark { font-size: 19px; }
+}
+
+
+.login-shell form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+.login-shell h1 {
+  font-family: var(--font-display);
+  font-size: 26px;
+  margin-bottom: 24px;
+  text-transform: capitalize;
+}
+.login-shell .field {
+  width: 100%;
+  margin-bottom: 16px;
+  text-align: left;
+}
+.login-shell .forgot-password {
+  width: 100%;
+  margin-top: -10px;
+  margin-bottom: 16px;
+  text-align: right;
+  font-size: 13px;
+}
+.login-shell .forgot-password a {
+  color: var(--color-focus);
+}
+.login-shell .field label {
+  display: block;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 8px;
+}
+.login-shell input {
+  width: 100%;
+  display: block;
+  margin: 0;
+}
+.login-shell .btn {
+  width: 100%;
+  background: #6fe3c8;
+  color: #0a1f2b;
+  text-transform: capitalize;
+}
+.login-shell .btn:hover {
+  background: #8ef0d7;
+}
+.login-shell .auth-switch {
+  margin: 20px 0 0;
+  font-size: 13px;
+  color: var(--color-ink-dim);
+  background: transparent;
+}
+.login-shell .auth-switch a {
+  color: var(--color-focus);
 }

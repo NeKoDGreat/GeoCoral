@@ -28,4 +28,4 @@ raw_data/local_field_images/metadata.csv
 # OS/editor junk
 .DS_Store
 Thumbs.db
-.vscode/
+.vscode/osgeo4w-setup.exe

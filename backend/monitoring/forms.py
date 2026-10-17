@@ -17,8 +17,8 @@ from .models import UserProfile
 
 
 class DiverRegistrationForm(UserCreationForm):
-    email = forms.EmailField(required=False)
-    phone_number = forms.CharField(required=False, max_length=30)
+    email = forms.EmailField(required=True)
+    phone_number = forms.CharField(required=True, max_length=30)
 
     class Meta:
         model = User
