@@ -25,8 +25,11 @@ SECRET_KEY = os.environ.get(
 
 DEBUG = os.environ.get("DJANGO_DEBUG", "True") == "True"
 
-ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,*").split(",")
-
+# ALLOWED_HOSTS = os.environ.get("DJANGO_ALLOWED_HOSTS", "localhost,127.0.0.1,""*","mia-typical-subsidiaries-vaccine.trycloudflare.com").split(",")
+ALLOWED_HOSTS = os.environ.get(
+    "DJANGO_ALLOWED_HOSTS",
+    "localhost,127.0.0.1,mia-typical-subsidiaries-vaccine.trycloudflare.com"
+).split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -173,4 +176,8 @@ GEOCORAL_MODEL_PATH = os.environ.get(
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "monitoring:role_home"
-CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o]
+# CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS","","https://mia-typical-subsidiaries-vaccine.trycloudflare.com").split(",") if o]
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://*.trycloudflare.com",
+]
