@@ -173,3 +173,4 @@ GEOCORAL_MODEL_PATH = os.environ.get(
 
 LOGIN_URL = "login"
 LOGIN_REDIRECT_URL = "monitoring:role_home"
+CSRF_TRUSTED_ORIGINS = [o for o in os.environ.get("DJANGO_CSRF_TRUSTED_ORIGINS", "").split(",") if o]
