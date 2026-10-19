@@ -107,8 +107,12 @@ else:
     # The filename/location varies by OS and install method — see
     # backend/README.md for how to find it on your machine.
     SPATIALITE_LIBRARY_PATH = os.environ.get("SPATIALITE_LIBRARY_PATH", "mod_spatialite")
-GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH") 
-GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH")
+
+# GeoDjango needs the GDAL and GEOS libraries whichever database is used.
+# Each developer sets these in their own environment (see start.ps1);
+# never hardcode a machine-specific path such as C:\OSGeo4W\... here.
+GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH") or None
+GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH") or None
 
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
@@ -158,19 +162,14 @@ CORS_ALLOWED_ORIGINS = os.environ.get(
 # GeoCoral ML model integration
 # ----------------------------------------------------------------------
 # Path to the trained classifier checkpoint (see training/train.py in
-# the ML project). monitoring/ml_service.py loads this once at first use.
-GEOCORAL_MODEL_PATH = os.environ.get(
-    "GEOCORAL_MODEL_PATH",
-    str(ML_PROJECT_ROOT / "saved_models" / "geocoral_resnet50_best.keras"),
+# the ML project).
 
-    
-)
+# monitoring/ml_service.py loads this once at first use.
+
+GEOCORAL_MODEL_PATH = os.environ.get(
+      "GEOCORAL_MODEL_PATH",
+      str(ML_PROJECT_ROOT / "saved_models" / "geocoral_resnet50_best.keras"),
+  )
 
 LOGIN_URL = "login"
-<<<<<<< HEAD
-LOGIN_REDIRECT_URL = "monitoring:map"
-GDAL_LIBRARY_PATH = os.environ.get("GDAL_LIBRARY_PATH") or None
-GEOS_LIBRARY_PATH = os.environ.get("GEOS_LIBRARY_PATH") or None
-=======
 LOGIN_REDIRECT_URL = "monitoring:role_home"
->>>>>>> origin/vinceChanges

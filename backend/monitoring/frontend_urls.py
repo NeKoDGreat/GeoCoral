@@ -1,9 +1,5 @@
 from django.urls import path
 
-<<<<<<< HEAD
-from .frontend_views import DashboardView, MapView, RegisterView, UploadView, VerifyRecordView
-from .frontend_views import DashboardView, MapView, RegisterView, SpeciesTagView, UploadView, VerifyRecordView
-=======
 from .frontend_views import (
     DashboardView,
     DiverHomeView,
@@ -12,10 +8,10 @@ from .frontend_views import (
     MapView,
     RegisterView,
     RoleHomeView,
+    SpeciesTagView,
     UploadView,
     VerifyRecordView,
 )
->>>>>>> origin/vinceChanges
 
 app_name = "monitoring"
 
